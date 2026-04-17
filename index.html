@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaulto — Secure Authentication</title>
+  <meta name="description" content="Premium authentication — fast, secure, and beautifully crafted for modern teams." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       CSS
+  ═══════════════════════════════════════════════════════ -->
+  <style>
+    /* ── DESIGN TOKENS ────────────────────────────────────── */
+    :root {
+      --font:       'Inter', system-ui, sans-serif;
+      --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out:   cubic-bezier(0, 0, 0.2, 1);
+      --spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
+      --t1: 0.15s;  --t2: 0.25s;  --t3: 0.4s;
+      --r-sm: 8px;  --r-md: 12px; --r-lg: 16px; --r-xl: 22px;
+    }
+
+    /* ── DARK THEME ───────────────────────────────────────── */
+    [data-theme="dark"] {
+      --bg:            #070810;
+      --bg-rp:         #070810;
+      --bg-input:      rgba(255,255,255,0.04);
+      --bg-input-h:    rgba(255,255,255,0.065);
+      --bg-input-f:    rgba(255,255,255,0.07);
+      --bg-social:     rgba(255,255,255,0.04);
+      --bg-social-h:   rgba(255,255,255,0.09);
+      --bg-pill:       rgba(255,255,255,0.05);
+      --bd:            rgba(255,255,255,0.08);
+      --bd-h:          rgba(255,255,255,0.15);
+      --bd-focus:      #6366f1;
+      --bd-ok:         #22c55e;
+      --bd-err:        #f43f5e;
+      --t1:            #eef0f8;
+      --t2:            #8a8da8;
+      --t3:            #44475a;
+      --accent:        #6366f1;
+      --accent2:       #8b5cf6;
+      --accent-g:      rgba(99,102,241,0.42);
+      --accent-s:      rgba(99,102,241,0.1);
+      --ok:            #22c55e;
+      --ok-g:          rgba(34,197,94,0.4);
+      --ok-s:          rgba(34,197,94,0.1);
+      --err:           #f43f5e;
+      --err-s:         rgba(244,63,94,0.1);
+      --warn:          #fb923c;
+      --shadow:        0 0 0 1px rgba(255,255,255,0.05), 0 28px 72px rgba(0,0,0,0.7);
+      --shadow-sm:     0 4px 14px rgba(0,0,0,0.45);
+      --lbl-bg:        #070810;
+      --scrollbar:     rgba(255,255,255,0.1);
+      --dot-color:     rgba(255,255,255,0.028);
+    }
+
+    /* ── LIGHT THEME ──────────────────────────────────────── */
+    [data-theme="light"] {
+      --bg:            #f3f4fb;
+      --bg-rp:         #f3f4fb;
+      --bg-input:      rgba(0,0,0,0.03);
+      --bg-input-h:    rgba(0,0,0,0.055);
+      --bg-input-f:    #ffffff;
+      --bg-social:     rgba(0,0,0,0.03);
+      --bg-social-h:   rgba(0,0,0,0.06);
+      --bg-pill:       rgba(0,0,0,0.04);
+      --bd:            rgba(0,0,0,0.1);
+      --bd-h:          rgba(0,0,0,0.18);
+      --bd-focus:      #4f46e5;
+      --bd-ok:         #16a34a;
+      --bd-err:        #e11d48;
+      --t1:            #0d0f1c;
+      --t2:            #575b78;
+      --t3:            #aaadcb;
+      --accent:        #4f46e5;
+      --accent2:       #7c3aed;
+      --accent-g:      rgba(79,70,229,0.28);
+      --accent-s:      rgba(79,70,229,0.08);
+      --ok:            #16a34a;
+      --ok-g:          rgba(22,163,74,0.3);
+      --ok-s:          rgba(22,163,74,0.08);
+      --err:           #e11d48;
+      --err-s:         rgba(225,29,72,0.08);
+      --warn:          #ea580c;
+      --shadow:        0 0 0 1px rgba(0,0,0,0.07), 0 20px 56px rgba(0,0,0,0.11);
+      --shadow-sm:     0 4px 12px rgba(0,0,0,0.09);
+      --lbl-bg:        #f3f4fb;
+      --scrollbar:     rgba(0,0,0,0.12);
+      --dot-color:     rgba(0,0,0,0.04);
+    }
+
+    /* ── RESET ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: var(--font); font-size: 16px; height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--t1);
+      min-height: 100vh;
+      display: flex;
+      transition: background var(--t2) var(--ease), color var(--t2) var(--ease);
+    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 99px; }
+    ::selection { background: var(--accent-s); color: var(--accent); }
+
+    /* ── PAGE ────────────────────────────────────────────── */
+    .page { display: flex; min-height: 100vh; width: 100%; }
+
+    /* ══════════════════════════════════════════════════════
+       LEFT PANEL — always dark, brand-focused
+    ══════════════════════════════════════════════════════ */
+    .lp {
+      width: 448px;
+      flex-shrink: 0;
+      background: #06070f;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: lpSlideIn 0.7s var(--ease-out) both;
+    }
+    @keyframes lpSlideIn {
+      from { opacity: 0; transform: translateX(-28px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Animated gradient blobs */
+    .lp-blob {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(70px);
+      will-change: transform;
+    }
+    .lp-blob-1 {
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(99,102,241,0.24), transparent 70%);
+      top: -100px; left: -80px;
+      animation: blob1 20s ease-in-out infinite alternate;
+    }
+    .lp-blob-2 {
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(139,92,246,0.18), transparent 70%);
+      bottom: -60px; right: -60px;
+      animation: blob2 26s ease-in-out infinite alternate;
+    }
+    .lp-blob-3 {
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, rgba(6,182,212,0.1), transparent 70%);
+      top: 55%; left: 45%;
+      animation: blob3 16s ease-in-out infinite alternate;
+    }
+    @keyframes blob1 { to { transform: translate(55px, 80px) scale(1.25); } }
+    @keyframes blob2 { to { transform: translate(-40px,-65px) scale(1.15); } }
+    @keyframes blob3 { to { transform: translate(-30px, 50px) rotate(50deg); } }
+
+    /* Noise grain */
+    .lp-grain {
+      position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.045;
+    }
+
+    /* Separator gradient line */
+    .lp::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 8%; bottom: 8%; width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0.08) 70%, transparent);
+      z-index: 2;
+    }
+
+    .lp-inner {
+      position: relative;
+      z-index: 3;
+      padding: 52px 48px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    /* LP Logo */
+    .lp-logo {
+      display: flex; align-items: center; gap: 11px;
+      margin-bottom: 56px;
+    }
+    .lp-logo-mark {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 22px rgba(99,102,241,0.55);
+      font-size: 19px;
+    }
+    .lp-logo-name {
+      font-size: 1.12rem; font-weight: 800; letter-spacing: -0.4px;
+      color: rgba(255,255,255,0.95);
+    }
+
+    /* LP Headline */
+    .lp-headline {
+      font-size: 2.05rem; font-weight: 800;
+      line-height: 1.16; letter-spacing: -0.7px;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 16px;
+    }
+    .lp-headline em {
+      font-style: normal;
+      background: linear-gradient(135deg, #a5b4fc 30%, #7c3aed);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .lp-subtext {
+      font-size: 0.875rem; line-height: 1.65; font-weight: 400;
+      color: rgba(255,255,255,0.42);
+      margin-bottom: 44px;
+    }
+
+    /* Stars */
+    .lp-stars {
+      display: flex; gap: 2px; margin-bottom: 28px;
+      font-size: 14px; color: #fbbf24; letter-spacing: 1px;
+    }
+
+    /* Feature list */
+    .lp-features {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 22px;
+      margin-bottom: 48px;
+    }
+    .lp-feat { display: flex; align-items: flex-start; gap: 14px; }
+    .lp-feat-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+    }
+    .lp-feat-icon svg { color: rgba(255,255,255,0.6); }
+    .lp-feat-body strong {
+      display: block; font-size: 0.86rem; font-weight: 600;
+      color: rgba(255,255,255,0.82); margin-bottom: 3px;
+    }
+    .lp-feat-body p {
+      font-size: 0.78rem; line-height: 1.5;
+      color: rgba(255,255,255,0.38);
+    }
+
+    /* Social proof */
+    .lp-proof {
+      display: flex; align-items: center; gap: 14px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .lp-avatars { display: flex; }
+    .lp-av {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 2px solid #06070f;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.67rem; font-weight: 700; color: #fff;
+      margin-left: -7px; flex-shrink: 0;
+    }
+    .lp-av:first-child { margin-left: 0; }
+    .lp-proof-copy strong {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      color: rgba(255,255,255,0.8); margin-bottom: 2px;
+    }
+    .lp-proof-copy span {
+      font-size: 0.73rem; color: rgba(255,255,255,0.35);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       RIGHT PANEL
+    ══════════════════════════════════════════════════════ */
+    .rp {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px 64px;
+      position: relative;
+      background: var(--bg-rp);
+      transition: background var(--t2) var(--ease);
+    }
+
+    /* Dot grid background */
+    .rp::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+      background-size: 26px 26px;
+      pointer-events: none; z-index: 0;
+      transition: background-color var(--t2) var(--ease);
+    }
+
+    /* Theme toggle */
+    .theme-btn {
+      position: absolute; top: 20px; right: 20px; z-index: 10;
+      width: 38px; height: 38px;
+      border: 1.5px solid var(--bd);
+      border-radius: var(--r-md);
+      background: var(--bg-social);
+      color: var(--t2);
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--t2) var(--ease);
+    }
+    .theme-btn:hover { border-color: var(--bd-h); color: var(--accent); transform: rotate(18deg) scale(1.06); }
+
+    /* Mobile-only logo */
+    .mobile-logo {
+      display: none; align-items: center; gap: 10px;
+      margin-bottom: 32px; position: relative; z-index: 1;
+    }
+    .mobile-logo-mark {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px; font-size: 17px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px var(--accent-g);
+    }
+    .mobile-logo-name {
+      font-size: 1.1rem; font-weight: 800; letter-spacing: -0.4px;
+      background: linear-gradient(135deg, var(--t1), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Form container */
+    .form-area {
+      width: 100%; max-width: 388px;
+      position: relative; z-index: 1;
+      animation: rpFadeIn 0.55s var(--ease-out) 0.1s both;
+    }
+    @keyframes rpFadeIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── PANEL SWITCHER ───────────────────────────────── */
+    .switcher {
+      display: flex; padding: 4px;
+      background: var(--bg-pill); border-radius: var(--r-lg);
+      border: 1px solid var(--bd); margin-bottom: 36px;
+      position: relative;
+    }
+    .switcher::before {
+      content: '';
+      position: absolute; top: 4px; left: 4px;
+      width: calc(50% - 4px); height: calc(100% - 8px);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: calc(var(--r-lg) - 4px);
+      transition: transform var(--t3) var(--spring);
+      box-shadow: 0 2px 14px var(--accent-g);
+      pointer-events: none;
+    }
+    .switcher.on-signup::before { transform: translateX(100%); }
+    .sw-btn {
+      flex: 1; padding: 9px 0; border: none; background: transparent;
+      font-family: var(--font); font-size: 0.84rem; font-weight: 600;
+      color: var(--t3); cursor: pointer; position: relative; z-index: 1;
+      border-radius: calc(var(--r-lg) - 4px);
+      transition: color var(--t2) var(--ease); letter-spacing: 0.01em;
+    }
+    .sw-btn.active { color: #fff; }
+
+    /* ── HEADING ──────────────────────────────────────── */
+    .form-heading { margin-bottom: 28px; }
+    .form-heading h2 {
+      font-size: 1.6rem; font-weight: 800; letter-spacing: -0.6px;
+      line-height: 1.2; margin-bottom: 8px; color: var(--t1);
+    }
+    .form-heading p { font-size: 0.85rem; color: var(--t2); line-height: 1.6; }
+
+    /* ── SOCIAL BUTTONS ───────────────────────────────── */
+    .social-row {
+      display: flex; gap: 10px; margin-bottom: 22px;
+    }
+    .social-btn {
+      flex: 1; height: 44px; border-radius: var(--r-md);
+      border: 1.5px solid var(--bd); background: var(--bg-social);
+      color: var(--t2); display: flex; align-items: center; justify-content: center;
+      gap: 8px; font-family: var(--font); font-size: 0.83rem; font-weight: 600;
+      cursor: pointer; position: relative; overflow: hidden;
+      transition: all var(--t2) var(--ease);
+    }
+    .social-btn:hover {
+      border-color: var(--bd-h); color: var(--t1);
+      background: var(--bg-social-h); transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    .social-btn:active { transform: translateY(0); }
+
+    /* ── DIVIDER ──────────────────────────────────────── */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 24px;
+      font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--t3);
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--bd);
+    }
+
+    /* ── PANELS ───────────────────────────────────────── */
+    .panel.hidden { display: none; }
+    .panel:not(.hidden) { animation: panelReveal 0.3s var(--ease-out) both; }
+    @keyframes panelReveal {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Staggered field entrance */
+    .panel:not(.hidden) .social-row                  { animation-delay: 0.00s; }
+    .panel:not(.hidden) .divider                     { animation-delay: 0.04s; }
+    .panel:not(.hidden) .field:nth-of-type(1)        { animation-delay: 0.07s; }
+    .panel:not(.hidden) .field:nth-of-type(2)        { animation-delay: 0.12s; }
+    .panel:not(.hidden) .field:nth-of-type(3)        { animation-delay: 0.17s; }
+    .panel:not(.hidden) .field:nth-of-type(4)        { animation-delay: 0.22s; }
+    .panel:not(.hidden) .form-opts                   { animation-delay: 0.24s; }
+    .panel:not(.hidden) .submit-btn                  { animation-delay: 0.27s; }
+    .panel:not(.hidden) .social-row,
+    .panel:not(.hidden) .divider,
+    .panel:not(.hidden) .field,
+    .panel:not(.hidden) .form-opts,
+    .panel:not(.hidden) .submit-btn {
+      animation: panelReveal 0.28s var(--ease-out) both;
+    }
+
+    /* ── FLOATING-LABEL FIELD ─────────────────────────── */
+    .field { position: relative; margin-bottom: 14px; }
+
+    .field-ico {
+      position: absolute; left: 15px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--t3); pointer-events: none;
+      line-height: 0;
+      transition: color var(--t2) var(--ease);
+    }
+    .field:focus-within .field-ico { color: var(--accent); }
+    .field.ok  .field-ico           { color: var(--ok); }
+    .field.err .field-ico           { color: var(--err); }
+
+    /* Float label */
+    .field-lbl {
+      position: absolute; left: 44px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.875rem; color: var(--t3);
+      pointer-events: none; z-index: 1;
+      transition: all var(--t2) var(--ease);
+      white-space: nowrap;
+    }
+    .field:focus-within .field-lbl,
+    .field.has-val      .field-lbl {
+      top: 0; transform: translateY(-50%);
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.04em; color: var(--accent);
+      left: 41px; padding: 0 5px;
+      background: var(--lbl-bg);
+      transition: all var(--t2) var(--ease), background 0s;
+    }
+    .field.ok.has-val .field-lbl  { color: var(--ok); }
+    .field.err .field-lbl          { color: var(--err); }
+
+    /* Input */
+    .field-inp {
+      width: 100%; height: 52px;
+      padding: 0 46px 0 44px;
+      background: var(--bg-input); border-radius: var(--r-md);
+      border: 1.5px solid var(--bd);
+      font-family: var(--font); font-size: 0.9rem; font-weight: 500;
+      color: var(--t1); outline: none; caret-color: var(--accent);
+      transition:
+        background var(--t1) var(--ease),
+        border-color var(--t2) var(--ease),
+        box-shadow var(--t2) var(--ease);
+    }
+    .field-inp::placeholder { color: transparent; }
+    .field-inp:hover:not(:focus) {
+      background: var(--bg-input-h); border-color: var(--bd-h);
+    }
+    .field-inp:focus {
+      background: var(--bg-input-f); border-color: var(--bd-focus);
+      box-shadow: 0 0 0 3.5px var(--accent-s);
+    }
+    .field.ok  .field-inp { border-color: var(--bd-ok);  box-shadow: 0 0 0 3px var(--ok-s); }
+    .field.err .field-inp { border-color: var(--bd-err); box-shadow: 0 0 0 3px var(--err-s); }
+
+    /* No right pad when no badge/toggle */
+    .field-inp { padding-right: 44px; }
+
+    /* Validation icon */
+    .field-badge {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%) scale(0);
+      opacity: 0; pointer-events: none; line-height: 0;
+      transition: transform var(--t3) var(--spring), opacity var(--t2) var(--ease);
+    }
+    .field.ok  .field-badge { transform: translateY(-50%) scale(1); opacity: 1; }
+    .field.err .field-badge { transform: translateY(-50%) scale(1); opacity: 1; }
+
+    /* Pwd toggle */
+    .pwd-btn {
+      position: absolute; right: 11px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; padding: 6px;
+      border-radius: 7px; color: var(--t3);
+      cursor: pointer; line-height: 0;
+      transition: all var(--t1) var(--ease);
+    }
+    .pwd-btn:hover { color: var(--accent); background: var(--accent-s); }
+
+    /* Error message */
+    .field-msg {
+      font-size: 0.72rem; font-weight: 500; color: var(--err);
+      padding-left: 2px; margin-top: 5px;
+      max-height: 0; overflow: hidden; opacity: 0;
+      transition: max-height var(--t2) var(--ease), opacity var(--t2) var(--ease);
+    }
+    .field.err .field-msg { max-height: 20px; opacity: 1; }
+
+    /* Shake */
+    @keyframes fieldShake {
+      0%,100% { transform: translateX(0); }
+      18%      { transform: translateX(-7px); }
+      36%      { transform: translateX(7px); }
+      54%      { transform: translateX(-4px); }
+      72%      { transform: translateX(4px); }
+      90%      { transform: translateX(-2px); }
+    }
+    .shaking .field-inp { animation: fieldShake 0.42s var(--ease) both; }
+
+    /* ── PASSWORD STRENGTH ────────────────────────────── */
+    .pwd-strength {
+      margin-top: 10px; opacity: 0; pointer-events: none;
+      transform: translateY(-4px);
+      transition: all var(--t2) var(--ease);
+    }
+    .pwd-strength.show { opacity: 1; transform: none; pointer-events: auto; }
+    .ps-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 7px;
+    }
+    .ps-title { font-size: 0.7rem; color: var(--t3); font-weight: 500; }
+    .ps-lbl   { font-size: 0.7rem; font-weight: 700; }
+    .ps-bars  { display: flex; gap: 4px; }
+    .ps-bar {
+      flex: 1; height: 3px; border-radius: 99px;
+      background: var(--bd);
+      transition: background 0.32s var(--ease);
+    }
+    /* Level states applied to .ps-bars wrapper */
+    .ps-bars.lv1 .ps-bar:nth-child(-n+1)  { background: #f43f5e; }
+    .ps-bars.lv2 .ps-bar:nth-child(-n+2)  { background: #fb923c; }
+    .ps-bars.lv3 .ps-bar:nth-child(-n+3)  { background: #6366f1; }
+    .ps-bars.lv4 .ps-bar                  { background: #22c55e; }
+    .ps-lbl.lv1  { color: #f43f5e; }
+    .ps-lbl.lv2  { color: #fb923c; }
+    .ps-lbl.lv3  { color: #6366f1; }
+    .ps-lbl.lv4  { color: #22c55e; }
+
+    /* ── FORM OPTIONS ─────────────────────────────────── */
+    .form-opts {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 4px 0 22px;
+    }
+    .cb-wrap {
+      display: flex; align-items: center; gap: 9px;
+      cursor: pointer; user-select: none;
+    }
+    .cb-wrap input { display: none; }
+    .cb-box {
+      width: 17px; height: 17px; border-radius: 5px;
+      border: 1.5px solid var(--bd-h);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: transparent;
+      transition: all var(--t3) var(--spring);
+      flex-shrink: 0; will-change: transform;
+    }
+    .cb-wrap input:checked + .cb-box {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-color: var(--accent); color: #fff;
+      box-shadow: 0 2px 8px var(--accent-g); transform: scale(1.08);
+    }
+    .cb-lbl { font-size: 0.81rem; color: var(--t2); font-weight: 500; }
+    .forgot-lnk {
+      font-size: 0.81rem; font-weight: 600; color: var(--accent);
+      text-decoration: none; opacity: 0.85;
+      transition: opacity var(--t1) var(--ease);
+    }
+    .forgot-lnk:hover { opacity: 1; text-decoration: underline; }
+
+    /* ── SUBMIT BUTTON ────────────────────────────────── */
+    .sub-btn {
+      width: 100%; height: 50px; border: none;
+      border-radius: var(--r-md);
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color: #fff; font-family: var(--font);
+      font-size: 0.92rem; font-weight: 700; letter-spacing: 0.01em;
+      cursor: pointer; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      transition:
+        transform var(--t2) var(--spring),
+        box-shadow var(--t2) var(--ease),
+        opacity var(--t1) var(--ease);
+      box-shadow: 0 4px 22px var(--accent-g), inset 0 1px 0 rgba(255,255,255,0.18);
+      will-change: transform;
+    }
+    .sub-btn:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--accent-g), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .sub-btn:not(:disabled):active { transform: scale(0.99); }
+    .sub-btn:disabled { opacity: 0.52; cursor: not-allowed; }
+
+    /* Shimmer sweep on hover */
+    .sub-btn::after {
+      content: '';
+      position: absolute; top: 0; left: -75%;
+      width: 58%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: skewX(-20deg);
+    }
+    .sub-btn:not(:disabled):hover::after { animation: sweep 0.6s var(--ease) forwards; }
+    @keyframes sweep { from { left: -75%; } to { left: 130%; } }
+
+    /* Ripple */
+    .rpl {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transform: scale(0);
+      animation: rplAnim 0.55s linear forwards;
+      pointer-events: none;
+    }
+    @keyframes rplAnim { to { transform: scale(4); opacity: 0; } }
+
+    /* Button state slots */
+    .btn-inner { display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
+    .bs-text    { }
+    .bs-spinner { display: none; align-items: center; gap: 8px; }
+    .bs-check   { display: none; align-items: center; gap: 8px; }
+
+    .sub-btn.loading .bs-text    { display: none; }
+    .sub-btn.loading .bs-spinner { display: flex; }
+    .sub-btn.loading .bs-check   { display: none; }
+
+    .sub-btn.done .bs-text    { display: none; }
+    .sub-btn.done .bs-spinner { display: none; }
+    .sub-btn.done .bs-check   { display: flex; }
+    .sub-btn.done {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      box-shadow: 0 4px 22px var(--ok-g);
+    }
+
+    .spin-svg { animation: spinIt 0.75s linear infinite; }
+    @keyframes spinIt { to { transform: rotate(360deg); } }
+
+    /* ── FORGOT PANEL ─────────────────────────────────── */
+    .forgot-p { display: none; }
+    .forgot-p.show { display: block; animation: panelReveal 0.3s var(--ease-out); }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.81rem; font-weight: 600; color: var(--t2);
+      background: none; border: none; font-family: var(--font);
+      cursor: pointer; margin-bottom: 24px;
+      padding: 5px 0;
+      transition: color var(--t1) var(--ease);
+    }
+    .back-btn:hover { color: var(--accent); }
+
+    /* ── SUCCESS OVERLAY ──────────────────────────────── */
+    .success-ov {
+      position: absolute; inset: 0; z-index: 20;
+      background: var(--bg-rp);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 14px; text-align: center; padding: 40px;
+      opacity: 0; pointer-events: none;
+      transition: opacity var(--t3) var(--ease);
+    }
+    .success-ov.show { opacity: 1; pointer-events: auto; }
+
+    /* Animated check circle */
+    .sv-check {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 30px var(--ok-g);
+      animation: checkBounce 0.55s var(--spring) both;
+    }
+    @keyframes checkBounce {
+      from { transform: scale(0) rotate(-20deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    .sv-check svg path {
+      stroke-dasharray: 36; stroke-dashoffset: 36;
+      animation: drawPath 0.4s 0.22s var(--ease-out) forwards;
+    }
+    @keyframes drawPath { to { stroke-dashoffset: 0; } }
+
+    .sv-title {
+      font-size: 1.3rem; font-weight: 800; letter-spacing: -0.4px;
+      color: var(--t1); animation: panelReveal 0.4s 0.3s var(--ease-out) both;
+    }
+    .sv-sub {
+      font-size: 0.84rem; color: var(--t2); line-height: 1.6; max-width: 280px;
+      animation: panelReveal 0.4s 0.38s var(--ease-out) both;
+    }
+    .sv-cta {
+      margin-top: 6px; padding: 10px 26px;
+      border: 1.5px solid var(--accent); border-radius: var(--r-md);
+      background: var(--accent-s); color: var(--accent);
+      font-family: var(--font); font-size: 0.84rem; font-weight: 600;
+      cursor: pointer; transition: all var(--t2) var(--ease);
+      animation: panelReveal 0.4s 0.46s var(--ease-out) both;
+    }
+    .sv-cta:hover { background: var(--accent); color: #fff; box-shadow: 0 4px 18px var(--accent-g); }
+
+    /* ── FOOTER ───────────────────────────────────────── */
+    .form-footer {
+      margin-top: 28px; text-align: center;
+      font-size: 0.78rem; color: var(--t3); line-height: 1.7;
+    }
+    .form-footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
+    .form-footer a:hover { text-decoration: underline; }
+
+    .sec-note {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin-top: 15px;
+      font-size: 0.7rem; color: var(--t3); font-weight: 500;
+    }
+    .sec-note svg { color: var(--ok); flex-shrink: 0; }
+
+    .page-foot {
+      position: absolute; bottom: 14px;
+      font-size: 0.69rem; color: var(--t3);
+      white-space: nowrap; z-index: 1;
+    }
+
+    /* ── RESPONSIVE ───────────────────────────────────── */
+    @media (max-width: 860px) {
+      .lp { display: none; }
+      .mobile-logo { display: flex; }
+      .rp { padding: 24px 20px 60px; justify-content: flex-start; padding-top: 72px; }
+      .success-ov { position: fixed; background: var(--bg); }
+    }
+    @media (max-width: 480px) {
+      .form-heading h2 { font-size: 1.4rem; }
+      .social-btn span { display: none; }
+      .sub-btn { height: 48px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <!-- ═══════════════ LEFT PANEL ═══════════════ -->
+  <aside class="lp" aria-label="Vaulto brand">
+    <div class="lp-blob lp-blob-1" aria-hidden="true"></div>
+    <div class="lp-blob lp-blob-2" aria-hidden="true"></div>
+    <div class="lp-blob lp-blob-3" aria-hidden="true"></div>
+    <div class="lp-grain" aria-hidden="true"></div>
+
+    <div class="lp-inner">
+      <!-- Logo -->
+      <div class="lp-logo">
+        <div class="lp-logo-mark" aria-hidden="true">🔐</div>
+        <span class="lp-logo-name">Vaulto</span>
+      </div>
+
+      <h1 class="lp-headline">The <em>smartest</em> way to secure your work.</h1>
+      <p class="lp-subtext">Join over 50,000 development teams worldwide who trust Vaulto for mission-critical authentication.</p>
+
+      <div class="lp-stars" aria-label="Rated 5 stars">★★★★★</div>
+
+      <ul class="lp-features" aria-label="Key features">
+        <li class="lp-feat">
+          <div class="lp-feat-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="12" cy="12" r="1"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
+            </svg>
+          </div>
+          <div class="lp-feat-body">
+            <strong>Instant, frictionless login</strong>
+            <p>Sub-second authentication with smart session management built in.</p>
+          </div>
+        </li>
+        <li class="lp-feat">
+          <div class="lp-feat-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="lp-feat-body">
+            <strong>Bank-grade security</strong>
+            <p>256-bit encryption, zero-knowledge architecture, SOC 2 Type II certified.</p>
+          </div>
+        </li>
+        <li class="lp-feat">
+          <div class="lp-feat-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="lp-feat-body">
+            <strong>Always-on reliability</strong>
+            <p>99.99% uptime SLA. We're there when you need us, every time.</p>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Social proof -->
+      <div class="lp-proof">
+        <div class="lp-avatars" aria-hidden="true">
+          <div class="lp-av" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">A</div>
+          <div class="lp-av" style="background:linear-gradient(135deg,#ec4899,#f43f5e)">M</div>
+          <div class="lp-av" style="background:linear-gradient(135deg,#22c55e,#16a34a)">J</div>
+          <div class="lp-av" style="background:linear-gradient(135deg,#fb923c,#f59e0b)">S</div>
+          <div class="lp-av" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)">R</div>
+        </div>
+        <div class="lp-proof-copy">
+          <strong>50,000+ happy teams</strong>
+          <span>4.9 / 5 · 2,400+ reviews</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════ RIGHT PANEL ═══════════════ -->
+  <main class="rp" id="rp">
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">🌙</button>
+
+    <!-- Mobile logo -->
+    <div class="mobile-logo" aria-label="Vaulto">
+      <div class="mobile-logo-mark" aria-hidden="true">🔐</div>
+      <span class="mobile-logo-name">Vaulto</span>
+    </div>
+
+    <div class="form-area" id="formArea">
+
+      <!-- Switcher -->
+      <div class="switcher" id="switcher" role="tablist" aria-label="Switch between sign in and sign up">
+        <button class="sw-btn active" id="swLogin"  role="tab" aria-selected="true"  aria-controls="panelLogin">Sign In</button>
+        <button class="sw-btn"        id="swSignup" role="tab" aria-selected="false" aria-controls="panelSignup">Sign Up</button>
+      </div>
+
+      <!-- ─── LOGIN PANEL ─── -->
+      <div class="panel" id="panelLogin" role="tabpanel" aria-labelledby="swLogin">
+        <div class="form-heading">
+          <h2>Welcome back 👋</h2>
+          <p>Sign in to your Vaulto account to continue.</p>
+        </div>
+
+        <div class="social-row" aria-label="Social login options">
+          <button class="social-btn" id="gBtn" type="button" aria-label="Continue with Google">
+            <svg width="16" height="16" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path fill="#4285F4" d="M47.5 24.5c0-1.55-.13-3.04-.38-4.5H24v8.51h13.14c-.57 3.05-2.27 5.63-4.84 7.37v6.12h7.84C43.98 37.98 47.5 31.77 47.5 24.5z"/><path fill="#34A853" d="M24 48c6.48 0 11.92-2.15 15.9-5.85l-7.84-6.12c-2.16 1.45-4.93 2.3-8.06 2.3-6.2 0-11.45-4.19-13.32-9.81H2.57v6.32C6.54 42.78 14.72 48 24 48z"/><path fill="#FBBC05" d="M10.68 28.52A14.93 14.93 0 0 1 9.5 24c0-1.57.27-3.1.68-4.52v-6.32H2.57A23.98 23.98 0 0 0 0 24c0 3.87.93 7.53 2.57 10.84l8.11-6.32z"/><path fill="#EA4335" d="M24 9.5c3.49 0 6.62 1.2 9.08 3.56l6.8-6.8C35.91 2.38 30.47 0 24 0 14.72 0 6.54 5.22 2.57 13.16l8.11 6.32C12.55 13.69 17.8 9.5 24 9.5z"/></svg>
+            <span>Google</span>
+          </button>
+          <button class="social-btn" id="ghBtn" type="button" aria-label="Continue with GitHub">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            <span>GitHub</span>
+          </button>
+        </div>
+
+        <div class="divider">or continue with email</div>
+
+        <form id="loginForm" novalidate autocomplete="off">
+          <!-- Email -->
+          <div class="field" id="lf-em">
+            <span class="field-ico" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </span>
+            <input type="email" class="field-inp" id="loginEmail" name="email" autocomplete="email" spellcheck="false" aria-required="true" aria-label="Email address" />
+            <label class="field-lbl" for="loginEmail">Email address</label>
+            <span class="field-badge" id="lf-em-b" aria-hidden="true"></span>
+            <div class="field-msg" id="lf-em-m" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- Password -->
+          <div class="field" id="lf-pw" style="margin-bottom:8px;">
+            <span class="field-ico" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input type="password" class="field-inp" id="loginPwd" name="pwd" autocomplete="current-password" aria-required="true" aria-label="Password" />
+            <label class="field-lbl" for="loginPwd">Password</label>
+            <button type="button" class="pwd-btn" id="lPwdBtn" aria-label="Show password">
+              <svg id="lPwdIco" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <div class="field-msg" id="lf-pw-m" role="alert" aria-live="polite"></div>
+          </div>
+
+          <div class="form-opts">
+            <label class="cb-wrap" for="rememberMe">
+              <input type="checkbox" id="rememberMe" name="remember" />
+              <span class="cb-box" aria-hidden="true">✓</span>
+              <span class="cb-lbl">Remember me</span>
+            </label>
+            <a href="#" class="forgot-lnk" id="forgotLnk">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="sub-btn" id="loginBtn" aria-label="Sign in">
+            <span class="btn-inner">
+              <span class="bs-text">Sign In</span>
+              <span class="bs-spinner">
+                <svg class="spin-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                Signing in…
+              </span>
+              <span class="bs-check">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                Signed in!
+              </span>
+            </span>
+          </button>
+        </form>
+      </div><!-- /#panelLogin -->
+
+      <!-- ─── SIGNUP PANEL ─── -->
+      <div class="panel hidden" id="panelSignup" role="tabpanel" aria-labelledby="swSignup">
+        <div class="form-heading">
+          <h2>Create your account ✨</h2>
+          <p>Free forever. No credit card required.</p>
+        </div>
+
+        <div class="social-row" aria-label="Social signup options">
+          <button class="social-btn" type="button" aria-label="Sign up with Google">
+            <svg width="16" height="16" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path fill="#4285F4" d="M47.5 24.5c0-1.55-.13-3.04-.38-4.5H24v8.51h13.14c-.57 3.05-2.27 5.63-4.84 7.37v6.12h7.84C43.98 37.98 47.5 31.77 47.5 24.5z"/><path fill="#34A853" d="M24 48c6.48 0 11.92-2.15 15.9-5.85l-7.84-6.12c-2.16 1.45-4.93 2.3-8.06 2.3-6.2 0-11.45-4.19-13.32-9.81H2.57v6.32C6.54 42.78 14.72 48 24 48z"/><path fill="#FBBC05" d="M10.68 28.52A14.93 14.93 0 0 1 9.5 24c0-1.57.27-3.1.68-4.52v-6.32H2.57A23.98 23.98 0 0 0 0 24c0 3.87.93 7.53 2.57 10.84l8.11-6.32z"/><path fill="#EA4335" d="M24 9.5c3.49 0 6.62 1.2 9.08 3.56l6.8-6.8C35.91 2.38 30.47 0 24 0 14.72 0 6.54 5.22 2.57 13.16l8.11 6.32C12.55 13.69 17.8 9.5 24 9.5z"/></svg>
+            <span>Google</span>
+          </button>
+          <button class="social-btn" type="button" aria-label="Sign up with GitHub">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            <span>GitHub</span>
+          </button>
+        </div>
+
+        <div class="divider">or sign up with email</div>
+
+        <form id="signupForm" novalidate autocomplete="off">
+          <!-- Name -->
+          <div class="field" id="sf-nm">
+            <span class="field-ico" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/></svg>
+            </span>
+            <input type="text" class="field-inp" id="suName" name="name" autocomplete="name" aria-required="true" aria-label="Full name" />
+            <label class="field-lbl" for="suName">Full name</label>
+            <span class="field-badge" id="sf-nm-b" aria-hidden="true"></span>
+            <div class="field-msg" id="sf-nm-m" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- Email -->
+          <div class="field" id="sf-em">
+            <span class="field-ico" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </span>
+            <input type="email" class="field-inp" id="suEmail" name="email" autocomplete="email" spellcheck="false" aria-required="true" aria-label="Email address" />
+            <label class="field-lbl" for="suEmail">Email address</label>
+            <span class="field-badge" id="sf-em-b" aria-hidden="true"></span>
+            <div class="field-msg" id="sf-em-m" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- Password -->
+          <div class="field" id="sf-pw" style="margin-bottom:10px;">
+            <span class="field-ico" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input type="password" class="field-inp" id="suPwd" name="pwd" autocomplete="new-password" aria-required="true" aria-label="Password" />
+            <label class="field-lbl" for="suPwd">Password</label>
+            <button type="button" class="pwd-btn" id="sPwdBtn" aria-label="Show password">
+              <svg id="sPwdIco" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <div class="field-msg" id="sf-pw-m" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- Strength meter -->
+          <div class="pwd-strength" id="psWrap" aria-live="polite">
+            <div class="ps-row">
+              <span class="ps-title">Password strength</span>
+              <span class="ps-lbl" id="psLbl"></span>
+            </div>
+            <div class="ps-bars" id="psBars">
+              <div class="ps-bar"></div>
+              <div class="ps-bar"></div>
+              <div class="ps-bar"></div>
+              <div class="ps-bar"></div>
+            </div>
+          </div>
+
+          <!-- Confirm -->
+          <div class="field" id="sf-cp" style="margin-top:14px;">
+            <span class="field-ico" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <input type="password" class="field-inp" id="suCPwd" name="confirm" autocomplete="new-password" aria-required="true" aria-label="Confirm password" />
+            <label class="field-lbl" for="suCPwd">Confirm password</label>
+            <span class="field-badge" id="sf-cp-b" aria-hidden="true"></span>
+            <div class="field-msg" id="sf-cp-m" role="alert" aria-live="polite"></div>
+          </div>
+
+          <button type="submit" class="sub-btn" id="signupBtn" style="margin-top:22px;" aria-label="Create account">
+            <span class="btn-inner">
+              <span class="bs-text">Create Account</span>
+              <span class="bs-spinner">
+                <svg class="spin-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                Creating…
+              </span>
+              <span class="bs-check">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                Account created!
+              </span>
+            </span>
+          </button>
+        </form>
+      </div><!-- /#panelSignup -->
+
+      <!-- ─── FORGOT PANEL ─── -->
+      <div class="forgot-p" id="forgotP">
+        <button class="back-btn" id="backBtn" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Back to sign in
+        </button>
+        <div class="form-heading">
+          <h2>Reset password 🔑</h2>
+          <p>Enter your email — we'll send a secure reset link in seconds.</p>
+        </div>
+        <form id="forgotForm" novalidate>
+          <div class="field" id="fp-em">
+            <span class="field-ico" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </span>
+            <input type="email" class="field-inp" id="fpEmail" name="email" autocomplete="email" spellcheck="false" aria-label="Email address" />
+            <label class="field-lbl" for="fpEmail">Your email address</label>
+            <div class="field-msg" id="fp-em-m" role="alert" aria-live="polite"></div>
+          </div>
+          <button type="submit" class="sub-btn" id="resetBtn" aria-label="Send password reset link">
+            <span class="btn-inner">
+              <span class="bs-text">Send Reset Link</span>
+              <span class="bs-spinner">
+                <svg class="spin-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                Sending…
+              </span>
+              <span class="bs-check">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                Link sent!
+              </span>
+            </span>
+          </button>
+        </form>
+      </div><!-- /#forgotP -->
+
+      <!-- Form footer -->
+      <div class="form-footer" id="formFooter">
+        <span id="footerMsg">No account yet? <a href="#" id="footerA">Sign up free →</a></span>
+      </div>
+      <div class="sec-note" aria-label="Security notice">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        TLS encrypted · SOC 2 compliant · Zero-knowledge
+      </div>
+
+    </div><!-- /.form-area -->
+
+    <!-- Success overlay -->
+    <div class="success-ov" id="successOv" role="dialog" aria-modal="true" aria-label="Success" tabindex="-1">
+      <div class="sv-check" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5"/>
+        </svg>
+      </div>
+      <div class="sv-title" id="svTitle">You're in! 🎉</div>
+      <p class="sv-sub" id="svSub">Redirecting to your dashboard…</p>
+      <button class="sv-cta" id="svCta" type="button">Go to Dashboard →</button>
+    </div>
+
+    <footer class="page-foot">© <span id="yr"></span> Vaulto, Inc. · Privacy · Terms</footer>
+  </main>
+
+</div><!-- /.page -->
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── HELPERS ──────────────────────────────────────────── */
+const $       = id  => document.getElementById(id);
+const isEmail = v   => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+const sleep   = ms  => new Promise(r => setTimeout(r, ms));
+
+/* ── THEME ────────────────────────────────────────────── */
+const themeBtn = $('themeBtn');
+
+(function initTheme() {
+  const saved = localStorage.getItem('vaulto_theme');
+  const sys   = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  applyTheme(saved || sys);
+})();
+
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  themeBtn.textContent = t === 'dark' ? '☀️' : '🌙';
+  themeBtn.setAttribute('aria-label', t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  localStorage.setItem('vaulto_theme', t);
+}
+
+themeBtn.addEventListener('click', () => {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+/* ── FLOATING LABELS ──────────────────────────────────── */
+document.querySelectorAll('.field-inp').forEach(inp => {
+  const f  = inp.closest('.field');
+  const sync = () => { f.classList.toggle('has-val', inp.value.length > 0); };
+  inp.addEventListener('focus', sync);
+  inp.addEventListener('blur',  sync);
+  inp.addEventListener('input', sync);
+  sync();
+});
+
+/* ── FIELD STATE HELPERS ──────────────────────────────── */
+function setOk(fieldId, msgId, badgeId) {
+  const f = $(fieldId); f.classList.remove('err'); f.classList.add('ok');
+  if (msgId)   $(msgId).textContent   = '';
+  if (badgeId) $(badgeId).innerHTML   = svgCheck();
+}
+function setErr(fieldId, msgId, msg, badgeId) {
+  const f = $(fieldId); f.classList.remove('ok'); f.classList.add('err');
+  if (msgId)   $(msgId).textContent   = msg;
+  if (badgeId) $(badgeId).innerHTML   = svgX();
+}
+function clearF(fieldId, msgId, badgeId) {
+  const f = $(fieldId); f.classList.remove('ok', 'err', 'shaking');
+  if (msgId)   $(msgId).textContent   = '';
+  if (badgeId) $(badgeId).textContent = '';
+}
+function shake(fieldId) {
+  const f = $(fieldId); f.classList.remove('shaking'); void f.offsetWidth;
+  f.classList.add('shaking');
+  f.querySelector('.field-inp').addEventListener('animationend', () => f.classList.remove('shaking'), {once:true});
+}
+
+function svgCheck() {
+  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+}
+function svgX() {
+  return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+}
+
+/* ── RIPPLE ───────────────────────────────────────────── */
+document.querySelectorAll('.sub-btn, .social-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    if (btn.disabled) return;
+    const r = document.createElement('span');
+    const rc = btn.getBoundingClientRect();
+    const sz = Math.max(rc.width, rc.height) * 2;
+    r.className = 'rpl';
+    r.style.cssText = `width:${sz}px;height:${sz}px;left:${e.clientX-rc.left-sz/2}px;top:${e.clientY-rc.top-sz/2}px`;
+    btn.appendChild(r);
+    r.addEventListener('animationend', () => r.remove());
+  });
+});
+
+/* ── PASSWORD TOGGLE ──────────────────────────────────── */
+function initPwdToggle(inpId, btnId, icoId) {
+  const inp = $(inpId), btn = $(btnId), ico = $(icoId);
+  let vis = false;
+  btn.addEventListener('click', () => {
+    vis = !vis;
+    inp.type = vis ? 'text' : 'password';
+    btn.setAttribute('aria-label', vis ? 'Hide password' : 'Show password');
+    ico.innerHTML = vis
+      ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
+      : `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
+  });
+}
+initPwdToggle('loginPwd', 'lPwdBtn', 'lPwdIco');
+initPwdToggle('suPwd',    'sPwdBtn', 'sPwdIco');
+
+/* ── PANEL SWITCHER ───────────────────────────────────── */
+const switcher    = $('switcher');
+const panelLogin  = $('panelLogin');
+const panelSignup = $('panelSignup');
+const forgotP     = $('forgotP');
+
+function showLogin() {
+  switcher.style.display = '';
+  forgotP.classList.remove('show');
+  panelLogin.classList.remove('hidden');
+  panelSignup.classList.add('hidden');
+  $('swLogin').classList.add('active');   $('swSignup').classList.remove('active');
+  $('swLogin').setAttribute('aria-selected','true');
+  $('swSignup').setAttribute('aria-selected','false');
+  switcher.classList.remove('on-signup');
+  setFooter('login');
+}
+function showSignup() {
+  switcher.style.display = '';
+  forgotP.classList.remove('show');
+  panelLogin.classList.add('hidden');
+  panelSignup.classList.remove('hidden');
+  $('swLogin').classList.remove('active'); $('swSignup').classList.add('active');
+  $('swLogin').setAttribute('aria-selected','false');
+  $('swSignup').setAttribute('aria-selected','true');
+  switcher.classList.add('on-signup');
+  setFooter('signup');
+}
+function showForgot() {
+  switcher.style.display = 'none';
+  panelLogin.classList.add('hidden');
+  panelSignup.classList.add('hidden');
+  forgotP.classList.add('show');
+  setFooter('forgot');
+}
+function setFooter(mode) {
+  const msg = $('footerMsg');
+  const map = {
+    login:  `No account yet? <a href="#" id="footerA">Sign up free →</a>`,
+    signup: `Already have an account? <a href="#" id="footerA">Sign in</a>`,
+    forgot: `Remember it? <a href="#" id="footerA">Sign in</a>`
+  };
+  msg.innerHTML = map[mode];
+  $('footerA').addEventListener('click', e => {
+    e.preventDefault();
+    mode === 'login' ? showSignup() : showLogin();
+  });
+}
+
+$('swLogin').addEventListener('click',  showLogin);
+$('swSignup').addEventListener('click', showSignup);
+$('forgotLnk').addEventListener('click', e => { e.preventDefault(); showForgot(); });
+$('backBtn').addEventListener('click', showLogin);
+$('footerA').addEventListener('click', e => { e.preventDefault(); showSignup(); });
+
+/* ── LIVE VALIDATION ──────────────────────────────────── */
+function liveEmail(inpId, fieldId, msgId, badgeId) {
+  $(inpId).addEventListener('input', () => {
+    const v = $(inpId).value.trim();
+    if (!v) return clearF(fieldId, msgId, badgeId);
+    !isEmail(v)
+      ? setErr(fieldId, msgId, 'Enter a valid email address.', badgeId)
+      : setOk(fieldId, msgId, badgeId);
+  });
+}
+function livePwd(inpId, fieldId, msgId, min = 8) {
+  $(inpId).addEventListener('input', () => {
+    const v = $(inpId).value;
+    if (!v) return clearF(fieldId, msgId);
+    v.length < min
+      ? setErr(fieldId, msgId, `Use at least ${min} characters.`)
+      : setOk(fieldId, msgId);
+  });
+}
+
+liveEmail('loginEmail', 'lf-em', 'lf-em-m', 'lf-em-b');
+livePwd('loginPwd',     'lf-pw', 'lf-pw-m', 6);
+liveEmail('suEmail',    'sf-em', 'sf-em-m', 'sf-em-b');
+livePwd('suPwd',        'sf-pw', 'sf-pw-m', 8);
+liveEmail('fpEmail',    'fp-em', 'fp-em-m');
+
+$('suName').addEventListener('input', () => {
+  const v = $('suName').value.trim();
+  if (!v) return clearF('sf-nm', 'sf-nm-m', 'sf-nm-b');
+  v.length < 2
+    ? setErr('sf-nm', 'sf-nm-m', 'Name must be at least 2 characters.', 'sf-nm-b')
+    : setOk('sf-nm',  'sf-nm-m', 'sf-nm-b');
+});
+$('suCPwd').addEventListener('input', () => {
+  const v = $('suCPwd').value;
+  if (!v) return clearF('sf-cp', 'sf-cp-m', 'sf-cp-b');
+  v !== $('suPwd').value
+    ? setErr('sf-cp', 'sf-cp-m', 'Passwords do not match.', 'sf-cp-b')
+    : setOk('sf-cp',  'sf-cp-m', 'sf-cp-b');
+});
+
+/* ── PASSWORD STRENGTH ────────────────────────────────── */
+const psWrap = $('psWrap'), psLbl = $('psLbl'), psBars = $('psBars');
+const LEVELS = [
+  { cls: '', lbl: '' },
+  { cls: 'lv1', lbl: 'Weak' },
+  { cls: 'lv2', lbl: 'Fair' },
+  { cls: 'lv3', lbl: 'Good' },
+  { cls: 'lv4', lbl: 'Strong 💪' },
+];
+
+function calcStr(p) {
+  if (p.length < 6) return 0;
+  let s = 1;
+  if (p.length >= 10) s++;
+  if (/[A-Z]/.test(p) && /[a-z]/.test(p)) s++;
+  if (/\d/.test(p)) s++;
+  if (/[^A-Za-z0-9]/.test(p)) s++;
+  return Math.min(4, s);
+}
+
+$('suPwd').addEventListener('input', () => {
+  const v = $('suPwd').value;
+  psWrap.classList.toggle('show', v.length > 0);
+  const lv = calcStr(v), d = LEVELS[lv];
+  psBars.className = `ps-bars ${d.cls}`;
+  psLbl.className  = `ps-lbl ${d.cls}`;
+  psLbl.textContent = d.lbl;
+});
+
+/* ── SUBMIT SIMULATION ────────────────────────────────── */
+async function simulate(btnId, onSuccess) {
+  const btn = $(btnId);
+  btn.disabled = true; btn.classList.add('loading');
+  await sleep(1750);
+  btn.classList.remove('loading'); btn.classList.add('done');
+  await sleep(750);
+  onSuccess();
+}
+
+function showSuccess(title, sub) {
+  $('svTitle').textContent = title;
+  $('svSub').textContent   = sub;
+  const ov = $('successOv');
+  ov.classList.add('show');
+  ov.focus();
+}
+
+$('svCta').addEventListener('click', () => {
+  $('successOv').classList.remove('show');
+  document.querySelectorAll('.sub-btn').forEach(b => { b.classList.remove('done'); b.disabled = false; });
+  showLogin();
+});
+
+/* ── LOGIN ────────────────────────────────────────────── */
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = $('loginEmail').value.trim();
+  const pwd   = $('loginPwd').value;
+  let ok = true;
+
+  if (!email || !isEmail(email)) { setErr('lf-em','lf-em-m','Enter a valid email address.','lf-em-b'); shake('lf-em'); ok = false; }
+  if (!pwd || pwd.length < 6)    { setErr('lf-pw','lf-pw-m','Password must be at least 6 characters.'); shake('lf-pw'); ok = false; }
+  if (!ok) return;
+
+  $('rememberMe').checked
+    ? localStorage.setItem('vaulto_user', JSON.stringify({email}))
+    : sessionStorage.setItem('vaulto_user', JSON.stringify({email}));
+
+  await simulate('loginBtn', () => {
+    const name = email.split('@')[0];
+    showSuccess(`Welcome back, ${name}! 👋`, "You're signed in. Redirecting to your dashboard…");
+  });
+});
+
+/* ── SIGNUP ───────────────────────────────────────────── */
+$('signupForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name  = $('suName').value.trim();
+  const email = $('suEmail').value.trim();
+  const pwd   = $('suPwd').value;
+  const cpwd  = $('suCPwd').value;
+  let ok = true;
+
+  if (!name || name.length < 2) { setErr('sf-nm','sf-nm-m','Please enter your full name.','sf-nm-b'); shake('sf-nm'); ok=false; }
+  if (!email||!isEmail(email))  { setErr('sf-em','sf-em-m','Enter a valid email address.','sf-em-b'); shake('sf-em'); ok=false; }
+  if (!pwd||pwd.length<8)       { setErr('sf-pw','sf-pw-m','Use at least 8 characters.'); shake('sf-pw'); ok=false; }
+  if (cpwd!==pwd)               { setErr('sf-cp','sf-cp-m','Passwords do not match.','sf-cp-b'); shake('sf-cp'); ok=false; }
+  if (!ok) return;
+
+  localStorage.setItem('vaulto_user', JSON.stringify({name, email}));
+  await simulate('signupBtn', () => {
+    showSuccess(`Account created! 🎊`, `Welcome, ${name.split(' ')[0]}! Your Vaulto account is all set.`);
+  });
+});
+
+/* ── FORGOT ───────────────────────────────────────────── */
+$('forgotForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = $('fpEmail').value.trim();
+  if (!email||!isEmail(email)) { setErr('fp-em','fp-em-m','Enter a valid email address.'); shake('fp-em'); return; }
+  await simulate('resetBtn', () => {
+    showSuccess('Check your inbox 📬', `We sent a reset link to ${email}. Check your spam folder if needed.`);
+  });
+});
+
+/* ── SOCIAL BUTTON FEEDBACK ───────────────────────────── */
+document.querySelectorAll('.social-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.disabled = true; btn.style.opacity = '0.55';
+    setTimeout(() => { btn.disabled = false; btn.style.opacity = ''; }, 1400);
+  });
+});
+
+/* ── RESTORE REMEMBERED USER ──────────────────────────── */
+(function restore() {
+  try {
+    const d = JSON.parse(localStorage.getItem('vaulto_user') || sessionStorage.getItem('vaulto_user') || 'null');
+    if (d?.email) {
+      $('loginEmail').value = d.email;
+      if (localStorage.getItem('vaulto_user')) $('rememberMe').checked = true;
+      $('loginEmail').dispatchEvent(new Event('input'));
+    }
+  } catch {}
+})();
+
+/* ── FOOTER YEAR ──────────────────────────────────────── */
+$('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
